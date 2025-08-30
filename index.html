@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compiling Your Next Milestone...</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Poppins:wght@700;900&display=swap');
+
+        :root {
+            --bg-color: #1a1a2e;
+            --terminal-bg: #0f0f24;
+            --text-color: #e0e0e0;
+            --accent-color: #00ff99;
+            --highlight-color: #01f3f7;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Fira Code', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        /* --- Preloader / Surprise Section --- */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--terminal-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #terminal {
+            width: 90%;
+            max-width: 600px;
+            height: 300px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 40px rgba(0, 255, 153, 0.2);
+        }
+
+        .line {
+            line-height: 1.5;
+        }
+
+        .line .command {
+            color: var(--accent-color);
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: var(--accent-color);
+            animation: blink 1s steps(2) infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* --- Main Content Section --- */
+        #main-content {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #fff;
+            margin: 0;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin: 10px 0 30px;
+        }
+
+        .message {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, var(--highlight-color), #0091ff);
+            color: var(--bg-color);
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 20px rgba(1, 91, 247, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(1, 231, 247, 0.6);
+        }
+        
+        /* --- Confetti --- */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-color);
+            opacity: 0.7;
+            animation: fall linear forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div id="terminal">
+            <div id="terminal-output"></div>
+            <span class="cursor"></span>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <p style="font-size:40px;">Congrats PRAVAS</p>
+        <p class="subtitle">The Century Mark is Here!</p>
+        <p class="message">
+            99 problems solved. 99 challenges crushed. That's a journey of logic, persistence, and countless 'ahhh' moments.
+            <br><br>
+            Every great journey has its defining moments. This is yours. Let's make the next one historic.
+        </p>
+        
+        <a href="https://leetcode.com/problems/plus-one/description/" target="_blank" class="cta-button">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/LeetCode_Logo_1.png" alt="LeetCode Logo" style="width: 24px; height: 24px; margin-right: 10px;">
+            Solve Problem #100
+        </a>
+        
+        <p style="position: absolute; bottom: 10px; font-size: 0.8rem; color: #aaa;">
+            A celebration by a brother❤️
+        </p>
+    </div>
+
+    <script>
+        const terminalOutput = document.getElementById('terminal-output');
+        const preloader = document.getElementById('preloader');
+        const mainContent = document.getElementById('main-content');
+        
+        // === CUSTOMIZE FRIEND'S USERNAME HERE ===
+        const username = "Pravas";
+
+        const lines = [
+            { text: 'Booting achievement_tracker.exe...', command: true },
+            { text: `Connecting to LeetCode API...`, command: false },
+            { text: `Authentication successful.`, command: false },
+            { text: `Fetching stats for user: ${username}...`, command: true },
+            { text: `Problems Solved: <span id="counter">99</span>`, command: false },
+            { text: `Analyzing progress... Milestone detected!`, command: false },
+            { text: 'Initializing historic moment protocol...', command: true },
+            { text: 'Compilation complete. Launching celebration...', command: false },
+        ];
+        
+        let lineIndex = 0;
+        let charIndex = 0;
+
+        function type() {
+            if (lineIndex < lines.length) {
+                const currentLine = lines[lineIndex];
+                let lineHTML = '<div class="line">';
+                if (currentLine.command) {
+                    lineHTML += `<span class="command">>&nbsp;</span>`;
+                }
+                lineHTML += currentLine.text.substring(0, charIndex + 1);
+                lineHTML += '</div>';
+                
+                // This logic ensures we don't re-render previous lines
+                const allLines = document.querySelectorAll('.line');
+                if (allLines.length > lineIndex) {
+                    allLines[lineIndex].innerHTML = lineHTML;
+                } else {
+                    terminalOutput.innerHTML += lineHTML;
+                }
+
+                if (charIndex < currentLine.text.length - 1) {
+                    charIndex++;
+                    setTimeout(type, 50); // Typing speed
+                } else {
+                    charIndex = 0;
+                    lineIndex++;
+                    
+                    // Special effect for problem count
+                    if (lineIndex === 5) { // After "Problems Solved: 99" is typed
+                        glitchCounter();
+                    } else {
+                        setTimeout(type, 500); // Delay between lines
+                    }
+                }
+            } else {
+                // End of typing animation
+                setTimeout(revealMainContent, 1000);
+            }
+        }
+        
+        function glitchCounter() {
+            const counter = document.getElementById('counter');
+            let i = 0;
+            const interval = setInterval(() => {
+                counter.innerText = Math.floor(Math.random() * 90) + 10;
+                i++;
+                if (i > 15) {
+                    clearInterval(interval);
+                    counter.innerText = '99';
+                    counter.style.color = 'var(--highlight-color)';
+                    counter.style.fontWeight = 'bold';
+                    setTimeout(type, 1000); // Continue typing after glitch
+                }
+            }, 50);
+        }
+
+        function revealMainContent() {
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+                mainContent.style.display = 'flex';
+                launchConfetti();
+            }, 500);
+        }
+        
+        function launchConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                const colors = ['#00ff99', '#f7b801', '#ffffff', '#e0e0e0'];
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Add code symbols
+                const symbols = ['{}', '()', '=>', ';', '<>', '/'];
+                if (Math.random() > 0.7) {
+                    confetti.style.backgroundColor = 'transparent';
+                    confetti.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                    confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.fontSize = '1.2rem';
+                }
+
+                document.body.appendChild(confetti);
+            }
+        }
+        
+        // Define the fall animation dynamically
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = `
+            @keyframes fall {
+                0% { top: -20px; transform: rotate(0deg); }
+                100% { top: 100vh; transform: rotate(720deg); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+
+        // Start the experience
+        type();
+    </script>
+</body>
+</html>
